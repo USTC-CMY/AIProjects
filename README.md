@@ -1,2 +1,2 @@
 # AIProjects
-## 在学的AI项目
+## 第一个AI项目
