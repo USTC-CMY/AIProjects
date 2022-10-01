@@ -92,8 +92,8 @@ def train(args,model):
         for step, batch in enumerate(train_loader):
             batch = tuple(t.to(args.device) for t in batch)
             x, y = batch
-            print(x.shape)
-            print(y.shape)
+            # print(x.shape)
+            # print(y.shape)
             loss = model(x, y)
             train_loss +=loss.item()
             loss.backward()
@@ -105,17 +105,18 @@ def train(args,model):
         train_loss_list.append(train_loss)
         np.savetxt("train_loss_list.txt", train_loss_list)
         print("train Epoch:{},loss:{}".format(i,train_loss))
-
-        # 每个epcoh保存一次模型参数
-        save_model(args, model,i)
-        # 每训练一个epoch,用当前训练的模型对验证集进行测试
-        eval_loss, eval_acc = eval(args, model, test_loader)
-        #将每一个测试集验证的结果加入列表
-        val_loss_list.append(eval_loss)
-        val_acc_list.append(eval_acc)
-        np.savetxt("val_loss_list.txt",val_loss_list)
-        np.savetxt("val_acc_list.txt",val_acc_list)
-        print("val Epoch:{},eval_loss:{},eval_acc:{}".format(i, eval_loss, eval_acc))
+        
+        for i % 5 == 0:
+            # 每5个epcoh保存一次模型参数
+            save_model(args, model,i)
+            # 每训练5个epoch,用当前训练的模型对验证集进行测试
+            eval_loss, eval_acc = eval(args, model, test_loader)
+            #将每一个测试集验证的结果加入列表
+            val_loss_list.append(eval_loss)
+            val_acc_list.append(eval_acc)
+            np.savetxt("val_loss_list.txt",val_loss_list)
+            np.savetxt("val_acc_list.txt",val_acc_list)
+            print("val Epoch:{},eval_loss:{},eval_acc:{}".format(i, eval_loss, eval_acc))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -133,7 +134,7 @@ def main():
                         help="The initial learning rate for SGD.")
     parser.add_argument("--weight_decay", default=0, type=float,
                         help="Weight deay if we apply some.")
-    parser.add_argument("--total_epoch", default=5, type=int,
+    parser.add_argument("--total_epoch", default=100, type=int,
                         help="Total number of training epochs to perform.")
 
     args = parser.parse_args()
